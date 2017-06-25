@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NumProgressBar">
+        <attr name="progress_value_visibility" format="enum">
+            <enum name="visible" value="0"></enum>
+            <enum name="invisible" value="1"></enum>
+        </attr>
+        <attr name="progress_current_value" format="integer"></attr>
+        <attr name="max" format="integer"></attr>
+        <attr name="progress_unreached_color" format="color"></attr>
+        <attr name="progress_reached_color" format="color"></attr>
+        <attr name="progress_text_size" format="dimension"></attr>
+        <attr name="progress_text_color" format="color"></attr>
+    </declare-styleable>
+</resources>
