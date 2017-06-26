@@ -11,5 +11,6 @@
         <attr name="progress_reached_color" format="color"></attr>
         <attr name="progress_text_size" format="dimension"></attr>
         <attr name="progress_text_color" format="color"></attr>
+        <attr name="progress_bar_height" format="dimension"></attr>
     </declare-styleable>
 </resources>

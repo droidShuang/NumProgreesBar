@@ -10,12 +10,16 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     NumProgressBar numberProgressBar;
+    NumProgressBar numberProgressBar1;
+    NumProgressBar numberProgressBar2;
     int progress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         numberProgressBar = (NumProgressBar) this.findViewById(R.id.numberProgressBar);
+        numberProgressBar1 = (NumProgressBar) this.findViewById(R.id.numberProgressBar1);
+        numberProgressBar2 = (NumProgressBar) this.findViewById(R.id.numberProgressBar2);
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -24,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         numberProgressBar.setCurrentProgress(progress);
+                        numberProgressBar1.setCurrentProgress(progress);
+                        numberProgressBar2.setCurrentProgress(progress);
                         progress++;
                         if (progress >= 100) {
                             progress = 0;

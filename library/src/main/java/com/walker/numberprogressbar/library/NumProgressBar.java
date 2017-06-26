@@ -8,7 +8,10 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+
+import java.util.logging.Logger;
 
 /**
  * Created by ys826 on 2017-06-24.
@@ -31,7 +34,7 @@ public class NumProgressBar extends View {
     private int progressUnreachedColor;
 
     private float textSize;
-    private float progressBarSize;
+    private float barHeight;
     private int defaultMaxValue = 100;
 
     private int defaultTextColor = Color.rgb(255, 0, 0);
@@ -42,6 +45,8 @@ public class NumProgressBar extends View {
 
     private float defaultTextSize;
     private float defaultBarHeight=10;
+
+
     private Paint textPaint;
 
     private Paint progressReachedPaint;
@@ -82,7 +87,7 @@ public class NumProgressBar extends View {
 
         TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.NumProgressBar, defStyleAttr, 0);
         textSize = attributes.getDimension(R.styleable.NumProgressBar_progress_text_size, defaultTextSize);
-        progressBarSize = defaultBarHeight;
+        barHeight = attributes.getDimension(R.styleable.NumProgressBar_progress_bar_height,defaultBarHeight);
         textColor = attributes.getColor(R.styleable.NumProgressBar_progress_text_color, defaultTextColor);
 
         progressRechedColor = attributes.getColor(R.styleable.NumProgressBar_progress_reached_color, defaultProgressReachedColor);
@@ -97,7 +102,8 @@ public class NumProgressBar extends View {
 
     @Override
     protected int getSuggestedMinimumHeight() {
-        return (int) textSize;
+
+        return (int) Math.max(textSize,barHeight);
     }
 
     @Override
@@ -113,9 +119,9 @@ public class NumProgressBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (ifDrawText) {
-            caculteRectF();
+            calculateRectF();
         } else {
-
+            calculateRectfWithoutText();
         }
         if (ifDrawReachedBar) {
             canvas.drawRect(reachedBarRectF, progressReachedPaint);
@@ -128,8 +134,31 @@ public class NumProgressBar extends View {
         }
 
     }
+    private void calculateRectfWithoutText(){
+        if (currentProgress == 0) {
+            ifDrawReachedBar = false;
+        } else {
+            ifDrawReachedBar = true;
+            reachedBarRectF.left = getPaddingLeft();
+            reachedBarRectF.top =getHeight()/2.0f- barHeight /2.0f;
+            reachedBarRectF.right = (getWidth() - getPaddingRight() - getPaddingLeft()) / 100 * currentProgress + getPaddingRight();
+            reachedBarRectF.bottom = getHeight()/2.0f+ barHeight /2.0f;
+        }
+        if(currentProgress == 100){
+            ifDrawUnReachedBar = false;
+        }else{
+            ifDrawUnReachedBar = true;
+            unReachedBarRectF.left = reachedBarRectF.right;
+            unReachedBarRectF.top = getHeight()/2.0f- barHeight /2.0f;
+            unReachedBarRectF.bottom = getHeight()/2.0f+ barHeight /2.0f;
+            unReachedBarRectF.right = getWidth() - getPaddingRight();
+        }
 
-    private void caculteRectF() {
+
+    }
+
+
+    private void calculateRectF() {
         drawedText = (currentProgress * 100 / maxValue) + "%";
         drawedTextWidth = textPaint.measureText(drawedText);
 
@@ -139,9 +168,9 @@ public class NumProgressBar extends View {
         } else {
             ifDrawReachedBar = true;
             reachedBarRectF.left = getPaddingLeft();
-            reachedBarRectF.top =getHeight()/2.0f-progressBarSize/2.0f;
+            reachedBarRectF.top =getHeight()/2.0f- barHeight /2.0f;
             reachedBarRectF.right = (getWidth() - getPaddingRight() - getPaddingLeft()) / 100 * currentProgress + getPaddingRight();
-            reachedBarRectF.bottom = getHeight()/2.0f + progressBarSize/2.0f;
+            reachedBarRectF.bottom = getHeight()/2.0f + barHeight /2.0f;
             textStart = reachedBarRectF.right + 2.0f;
 
 
@@ -153,8 +182,8 @@ public class NumProgressBar extends View {
             textStart = getWidth() - getPaddingRight() - 2.0f - drawedTextWidth;
         } else {
             ifDrawUnReachedBar = true;
-            unReachedBarRectF.top = getHeight()/2.0f-progressBarSize/2.0f;
-            unReachedBarRectF.bottom = getHeight()/2.0f + progressBarSize/2.0f;
+            unReachedBarRectF.top = getHeight()/2.0f- barHeight /2.0f;
+            unReachedBarRectF.bottom = getHeight()/2.0f + barHeight /2.0f;
             unReachedBarRectF.left = textStart + drawedTextWidth + 2.0f;
             unReachedBarRectF.right = getWidth() - getPaddingRight();
         }
@@ -173,10 +202,12 @@ public class NumProgressBar extends View {
         } else {
             result = isWidth ? getSuggestedMinimumWidth() : getSuggestedMinimumHeight();
             result = result + padding;
+
             if (mode == MeasureSpec.AT_MOST) {
                 if (isWidth) {
                     result = Math.max(result, size);
                 } else {
+                    Log.e("NumProgressBar","result:"+result+"   size:"+size);
                     result = Math.min(
                             result, size);
                 }
